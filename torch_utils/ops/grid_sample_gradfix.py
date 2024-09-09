@@ -1,10 +1,3 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-#
-# NVIDIA CORPORATION and its licensors retain all intellectual property
-# and proprietary rights in and to this software, related documentation
-# and any modifications thereto.  Any use, reproduction, disclosure or
-# distribution of this software and related documentation without an express
-# license agreement from NVIDIA CORPORATION is strictly prohibited.
 
 """Custom replacement for `torch.nn.functional.grid_sample` that
 supports arbitrarily high order gradients between the input and output.
@@ -62,7 +55,7 @@ class _GridSample2dForward(torch.autograd.Function):
 class _GridSample2dBackward(torch.autograd.Function):
     @staticmethod
     def forward(ctx, grad_output, input, grid):
-        op, _ = torch._C._jit_get_operation('aten::grid_sampler_3d_backward')
+        op = torch._C._jit_get_operation('aten::grid_sampler_2d_backward')
         grad_input, grad_grid = op(grad_output, input, grid, 0, 0, False)
         ctx.save_for_backward(grid)
         return grad_input, grad_grid
@@ -80,5 +73,3 @@ class _GridSample2dBackward(torch.autograd.Function):
 
         assert not ctx.needs_input_grad[2]
         return grad2_grad_output, grad2_input, grad2_grid
-
-#----------------------------------------------------------------------------
